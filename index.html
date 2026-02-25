@@ -46,7 +46,7 @@
   <div class="wrap">
     <div class="card">
       <h1>UP Debug WebApp</h1>
-      <p class="hint">Цель: убедиться, что Mini App даёт initData и API умеет его валидировать.</p>
+      <p class="hint">Авто-логин: при каждом открытии Mini App сам проверит /auth/telegram и сохранит результат локально.</p>
 
       <div class="row" id="pills"></div>
 
@@ -70,7 +70,8 @@
 
   <script>
     const API_BASE = 'https://api.uslugeplus.com';
-    const SESSION_KEY = 'up_auth';
+    const STORE_KEY = 'up_auth';
+    const TTL_MS = 12 * 60 * 60 * 1000; // 12 часов
 
     const pills = document.getElementById('pills');
     const addPill = (t) => { const el=document.createElement('div'); el.className='pill'; el.textContent=t; pills.appendChild(el); };
@@ -86,21 +87,19 @@
       apiOutEl.textContent = typeof objOrText === 'string' ? objOrText : JSON.stringify(objOrText, null, 2);
     }
 
-    function getSession(){
-      try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+    function getStore(){
+      try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch { return null; }
     }
+    function setStore(val){ localStorage.setItem(STORE_KEY, JSON.stringify(val)); }
+    function clearStore(){ localStorage.removeItem(STORE_KEY); }
 
-    function setSession(val){
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(val));
-    }
-
-    function clearSession(){
-      sessionStorage.removeItem(SESSION_KEY);
+    function storeFreshEnough(s){
+      if (!s || !s._stored_at) return false;
+      return (Date.now() - s._stored_at) < TTL_MS;
     }
 
     async function callAuth(){
-      if (!tg) throw new Error('Telegram SDK not found');
-      const initData = tg.initData || '';
+      const initData = tg?.initData || '';
       if (!initData) throw new Error('initData is empty');
 
       const res = await fetch(`${API_BASE}/auth/telegram`, {
@@ -114,6 +113,24 @@
       try { json = JSON.parse(text); } catch { json = { raw: text }; }
 
       return { http: res.status, body: json };
+    }
+
+    async function autoLogin(){
+      setApiOut('Авто-проверка…');
+      try {
+        const out = await callAuth();
+        setApiOut(out);
+
+        if (out.http === 200 && out.body && (out.body.ok === true || out.body.user)) {
+          const payload = { ...out.body, _stored_at: Date.now() };
+          setStore(payload);
+          detailsEl.textContent = `API: ${API_BASE} · session: есть (localStorage)`;
+        } else {
+          detailsEl.textContent = `API: ${API_BASE} · session: пусто`;
+        }
+      } catch (e) {
+        setApiOut('Error: ' + (e?.message || e));
+      }
     }
 
     if (!tg) {
@@ -136,10 +153,16 @@
         `Telegram detected <span class="ok">✓</span> · initData len=<code>${initLen}</code>` +
         (user ? ` · user=<code>${user.id}</code>` : '');
 
-      detailsEl.textContent =
-        `API: ${API_BASE} · session: ` + (getSession() ? 'есть' : 'пусто');
-
       initPreviewEl.textContent = initData ? initData.slice(0, 240) + (initData.length > 240 ? '…' : '') : '—';
+
+      const cached = getStore();
+      if (storeFreshEnough(cached)) {
+        detailsEl.textContent = `API: ${API_BASE} · session: есть (localStorage)`;
+        setApiOut(cached);
+      } else {
+        detailsEl.textContent = `API: ${API_BASE} · session: пусто`;
+        autoLogin(); // <-- главное изменение: авто-вход при запуске
+      }
 
       document.getElementById('copyBtn').addEventListener('click', async () => {
         try {
@@ -152,27 +175,16 @@
 
       document.getElementById('authBtn').addEventListener('click', async () => {
         setApiOut('Запрос…');
-        try {
-          const out = await callAuth();
-          setApiOut(out);
-
-          if (out.http === 200 && out.body && (out.body.ok === true || out.body.user)) {
-            setSession(out.body);
-            detailsEl.textContent =
-              `API: ${API_BASE} · session: есть`;
-          }
-        } catch (e) {
-          setApiOut('Error: ' + (e?.message || e));
-        }
+        await autoLogin();
       });
 
       document.getElementById('showSessionBtn').addEventListener('click', () => {
-        const s = getSession();
+        const s = getStore();
         setApiOut(s ? s : 'session пусто');
       });
 
       document.getElementById('clearSessionBtn').addEventListener('click', () => {
-        clearSession();
+        clearStore();
         detailsEl.textContent = `API: ${API_BASE} · session: пусто`;
         setApiOut('session очищен');
       });
