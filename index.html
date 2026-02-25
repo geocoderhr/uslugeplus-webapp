@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UslugePlus WebApp</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg: var(--tg-theme-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #111111);
+      --hint: var(--tg-theme-hint-color, #6b7280);
+      --btn: var(--tg-theme-button-color, #3390ec);
+      --btnText: var(--tg-theme-button-text-color, #ffffff);
+      --card: rgba(0,0,0,.06);
+    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;background:var(--bg);color:var(--text);}
+    .wrap{max-width:720px;margin:0 auto;padding:20px;}
+    .card{background:var(--card);border-radius:14px;padding:16px;}
+    h1{font-size:20px;margin:0 0 10px}
+    p{margin:8px 0;line-height:1.35}
+    .hint{color:var(--hint);font-size:13px}
+    button{
+      background:var(--btn);color:var(--btnText);border:0;
+      padding:12px 14px;border-radius:12px;font-size:15px;cursor:pointer;
+      width:100%;margin-top:14px;
+    }
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.08);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>UslugePlus · Mini App</h1>
+      <p class="hint">Проверка: открыто ли внутри Telegram, приходит ли initData, читаются ли themeParams.</p>
+
+      <div class="row" id="pills"></div>
+
+      <p id="status">Загрузка…</p>
+      <p class="hint" id="details"></p>
+
+      <button id="closeBtn">Закрыть</button>
+    </div>
+  </div>
+
+  <script>
+    const pills = document.getElementById('pills');
+    const addPill = (t) => { const el=document.createElement('div'); el.className='pill'; el.textContent=t; pills.appendChild(el); };
+
+    const tg = window.Telegram?.WebApp;
+
+    if (!tg) {
+      document.getElementById('status').innerHTML = 'Telegram SDK не найден. Открой страницу внутри Telegram.';
+      document.getElementById('details').innerHTML = 'Проверь, что URL открывается как Mini App, а не в обычном браузере.';
+    } else {
+      tg.ready();
+      tg.expand();
+
+      addPill('platform: ' + (tg.platform || 'n/a'));
+      addPill('version: ' + (tg.version || 'n/a'));
+
+      const user = tg.initDataUnsafe?.user;
+      const initLen = (tg.initData || '').length;
+
+      if (user) {
+        document.getElementById('status').innerHTML =
+          `Привет, <b>${user.first_name || 'друг'}</b>. Telegram ID: <b>${user.id}</b>`;
+      } else {
+        document.getElementById('status').innerHTML =
+          'Похоже, страница открыта не как Mini App (user не пришёл).';
+      }
+
+      document.getElementById('details').innerHTML =
+        `initData length: <code>${initLen}</code> · theme bg: <code>${getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()}</code>`;
+
+      document.getElementById('closeBtn').addEventListener('click', () => tg.close());
+    }
+  </script>
+</body>
+</html>
