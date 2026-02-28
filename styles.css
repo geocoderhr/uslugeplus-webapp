@@ -13,7 +13,7 @@
   --page-pad-bottom: 18px;
 }
 
-
+/* ====== Page background ====== */
 html, body{ height: 100%; }
 
 html{
@@ -25,11 +25,16 @@ html{
     ),
     var(--tg-theme-bg-color, #0b0f17);
 }
+
 body{
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:
-  linear-gradient(180deg, rgba(56, 168, 255, 0.12), rgba(56, 168, 255, 0.00) 55%),
-  var(--tg-theme-bg-color, #0b0f17);
+    linear-gradient(
+      180deg,
+      rgba(56, 168, 255, 0.12),
+      rgba(56, 168, 255, 0.00) 55%
+    ),
+    var(--tg-theme-bg-color, #0b0f17);
   color: var(--tg-theme-text-color, #e9eef7);
   margin: 0;
 
@@ -42,8 +47,9 @@ body{
   justify-content: flex-start;
 }
 
-.hidden{ display:none; }
+.hidden{ display: none; }
 
+/* ====== Loader ====== */
 .loader{
   border: 4px solid rgba(0,0,0,0.08);
   border-top: 4px solid var(--accent);
@@ -59,24 +65,19 @@ body{
   100%{ transform: rotate(360deg); }
 }
 
-/* Главная карточка */
+/* ====== Common card ====== */
 .card{
-  /* реально делает карточку уже на телефоне */
   width: min(92vw, 380px);
-
-  /* “ниже”, но адаптивно: на маленьких экранах не улетает вниз */
   margin: clamp(18px, 10vh, 90px) auto 0;
 
   background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.06));
   border: 1px solid var(--b);
   border-radius: var(--r-card);
 
-  /* компактнее */
   padding: 14px 14px;
 
   box-shadow: var(--shadow);
 
-  /* если стекло раздражает: уменьшаем blur */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -95,7 +96,7 @@ p{
   color: var(--tg-theme-hint-color, rgba(233,238,247,0.75));
 }
 
-/* Плашки языка */
+/* ====== Language options (base) ====== */
 .lang-option{
   display: flex;
   align-items: center;
@@ -120,7 +121,6 @@ p{
   text-align: center;
 }
 
-/* Активный RU */
 #lang-ru{
   border-color: rgba(51,144,236,0.40);
   background: rgba(51,144,236,0.06);
@@ -134,11 +134,9 @@ p{
 }
 
 /* Убираем бейджи “сейчас/в разработке” полностью */
-.badge{
-  display: none !important;
-}
+.badge{ display: none !important; }
 
-/* Меню (оставил аккуратным, но компактнее) */
+/* ====== Menu ====== */
 .menu-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -165,28 +163,26 @@ p{
 }
 
 .menu-item:active{ transform: scale(0.99); }
+
+/* ====== Language screen overrides ====== */
+#lang-screen h3{ text-align: center; }
+#lang-screen p{ text-align: center; }
+
 /* smaller language pills (no font changes) */
 #lang-screen .lang-option{
-  width: min(66vw, 280px);  /* уже, чем карточка */
-  height: 44px;             /* ниже по высоте */
-  padding: 0 14px;          /* только горизонтальный внутренний отступ */
-  margin: 10px auto 0;      /* центрируем по горизонтали */
+  width: min(66vw, 280px);
+  height: 44px;
+  padding: 0 14px;
+  margin: 10px auto 0;
 }
-/* center the title on language screen */
-#lang-screen h3{
-  text-align: center;
-}
-#lang-screen p{
-  text-align: center;
-}
-/* accent background only for the Language screen card */
 
+/* accent background only for the Language screen card */
 #lang-screen .card{
   margin-left: auto;
   margin-right: auto;
-  margin-left: auto;
-  margin-right: auto;
-    width: min(72vw, 300px) !important;
+
+  width: min(72vw, 300px) !important;
+
   background:
     linear-gradient(
       135deg,
@@ -194,5 +190,6 @@ p{
       rgba(255, 138, 0, 0.16)
     ),
     var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.06));
+
   border-color: rgba(23, 195, 178, 0.22);
 }
