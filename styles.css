@@ -151,3 +151,10 @@ p{
 }
 
 .menu-item:active{ transform: scale(0.99); }
+/* smaller language pills (no font changes) */
+#lang-screen .lang-option{
+  width: min(82vw, 320px);  /* уже, чем карточка */
+  height: 44px;             /* ниже по высоте */
+  padding: 0 14px;          /* только горизонтальный внутренний отступ */
+  margin: 10px auto 0;      /* центрируем по горизонтали */
+}
