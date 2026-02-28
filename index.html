@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>UslugePlus</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
 
@@ -46,10 +46,14 @@
   </div>
 
   <script>
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tg) { tg.ready(); tg.expand(); }
+    /* ===== Telegram ===== */
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
 
-    // i18n skeleton: RU сейчас, HR пока заглушка (готовим структуру под EN позже)
+    /* ===== i18n skeleton: RU сейчас, HR заглушка (готовим структуру под EN позже) ===== */
     const I18N = {
       ru: {
         lang_title: 'Язык',
@@ -74,34 +78,38 @@
 
     let lang = localStorage.getItem('up_lang') || 'ru';
 
+    /* ===== helpers ===== */
     function t(key) {
       const pack = I18N[lang] || I18N.ru;
       return (pack && pack[key]) || (I18N.ru[key]) || key;
     }
 
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
     function applyTexts() {
       document.documentElement.lang = lang;
 
-      const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+      setText('lang-title', t('lang_title'));
+      setText('lang-subtitle', t('lang_subtitle'));
+      setText('lang-ru-badge', t('ru_badge'));
+      setText('lang-hr-badge', t('hr_badge'));
 
-      set('lang-title', t('lang_title'));
-      set('lang-subtitle', t('lang_subtitle'));
-      set('lang-ru-badge', t('ru_badge'));
-      set('lang-hr-badge', t('hr_badge'));
+      setText('loading-text', t('loading'));
+      setText('menu-title', t('menu_title'));
 
-      set('loading-text', t('loading'));
-      set('menu-title', t('menu_title'));
-
-      set('menu-create', t('m_create'));
-      set('menu-provider', t('m_provider'));
-      set('menu-profile', t('m_profile'));
-      set('menu-referral', t('m_referral'));
-      set('menu-reset', t('m_reset'));
+      setText('menu-create', t('m_create'));
+      setText('menu-provider', t('m_provider'));
+      setText('menu-profile', t('m_profile'));
+      setText('menu-referral', t('m_referral'));
+      setText('menu-reset', t('m_reset'));
     }
 
     function showOnly(screenId) {
       const ids = ['lang-screen', 'loading-screen', 'main-menu'];
-      ids.forEach(id => {
+      ids.forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
         if (id === screenId) el.classList.remove('hidden');
@@ -115,6 +123,7 @@
       applyTexts();
     }
 
+    /* ===== auth ===== */
     async function startAuth() {
       showOnly('loading-screen');
 
@@ -138,6 +147,7 @@
       }
     }
 
+    /* ===== bootstrap ===== */
     function bootstrap() {
       applyTexts();
 
@@ -162,20 +172,24 @@
             alert(t('hr_soon'));
           };
         }
-      } else {
-        setLang(saved);
-        startAuth();
+
+        return;
       }
+
+      setLang(saved);
+      startAuth();
     }
 
+    /* ===== menu actions ===== */
     function action(type) {
       if (tg) tg.HapticFeedback.impactOccurred('light');
 
       if (type === 'reset_app') {
-         localStorage.removeItem('up_lang');
-         location.href = location.pathname + '?v=' + Date.now();
-         return;
-    }
+        localStorage.removeItem('up_lang');
+        location.href = location.pathname + '?v=' + Date.now();
+        return;
+      }
+
       alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
     }
 
