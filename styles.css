@@ -15,7 +15,9 @@
 
 body{
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--tg-theme-bg-color, #0b0f17);
+  background:
+  linear-gradient(180deg, rgba(56, 168, 255, 0.12), rgba(56, 168, 255, 0.00) 55%),
+  var(--tg-theme-bg-color, #0b0f17);
   color: var(--tg-theme-text-color, #e9eef7);
   margin: 0;
 
