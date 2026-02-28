@@ -1,149 +1,209 @@
-    /* ===== Telegram ===== */
-    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+/* ===== Telegram ===== */
+const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
 
-    /* ===== i18n skeleton: RU сейчас, HR заглушка (готовим структуру под EN позже) ===== */
-    const I18N = {
-      ru: {
-        lang_title: 'Язык',
-        lang_subtitle: 'Выберите язык интерфейса.',
-        ru_badge: 'сейчас',
-        hr_badge: 'в разработке',
-        loading: 'Авторизация...',
-        menu_title: 'Главное меню',
-        m_create: '📝 Создать заявку',
-        m_provider: '🛠 Я исполнитель',
-        m_profile: '👤 Профиль',
-        m_referral: '🎁 Бонусы',
-        m_reset: '♻️ Сбросить данные',
-        auth_error: 'Ошибка авторизации. Попробуйте перезапустить приложение.',
-        net_error: 'Ошибка связи с сервером',
-        hr_soon: 'Hrvatski в разработке.'
-      },
-      hr: {
-        // Пока пусто: оставляем структуру, чтобы потом просто заполнить ключи
-      }
-    };
+/* ===== i18n skeleton: RU сейчас, HR заглушка (готовим структуру под EN позже) ===== */
+const I18N = {
+  ru: {
+    lang_title: 'Язык',
+    lang_subtitle: 'Выберите язык интерфейса.',
+    ru_badge: 'сейчас',
+    hr_badge: 'в разработке',
+    loading: 'Авторизация...',
+    menu_title: 'Главное меню',
+    m_create: '📝 Создать заявку',
+    m_provider: '🛠 Я исполнитель',
+    m_profile: '👤 Профиль',
+    m_referral: '🎁 Бонусы',
+    m_reset: '♻️ Сбросить данные',
+    auth_error: 'Ошибка авторизации. Попробуйте перезапустить приложение.',
+    net_error: 'Ошибка связи с сервером',
+    hr_soon: 'Hrvatski в разработке.',
 
-    let lang = localStorage.getItem('up_lang') || 'ru';
+    policy_title: 'Условия',
+    policy_text: 'Чтобы продолжить, нужно принять условия пользования и согласие на обработку персональных данных.',
+    policy_link: 'Прочитать условия',
+    policy_accept: '✅ Принимаю'
+  },
+  hr: {
+    // Пока пусто: оставляем структуру, чтобы потом просто заполнить ключи
+  }
+};
 
-    /* ===== helpers ===== */
-    function t(key) {
-      const pack = I18N[lang] || I18N.ru;
-      return (pack && pack[key]) || (I18N.ru[key]) || key;
-    }
+let lang = localStorage.getItem('up_lang') || 'ru';
 
-    function setText(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value;
-    }
+/* ===== Consent state ===== */
+const CONSENT_VERSION = 'v1';
+const CONSENT_KEY = 'up_consent_version';
+const CONSENT_AT_KEY = 'up_consent_at';
 
-    function applyTexts() {
-      document.documentElement.lang = lang;
+function hasConsent() {
+  return localStorage.getItem(CONSENT_KEY) === CONSENT_VERSION;
+}
 
-      setText('lang-title', t('lang_title'));
-      setText('lang-subtitle', t('lang_subtitle'));
-      setText('lang-ru-badge', t('ru_badge'));
-      setText('lang-hr-badge', t('hr_badge'));
+function setConsent() {
+  localStorage.setItem(CONSENT_KEY, CONSENT_VERSION);
+  localStorage.setItem(CONSENT_AT_KEY, new Date().toISOString());
+}
 
-      setText('loading-text', t('loading'));
-      setText('menu-title', t('menu_title'));
+/* ===== helpers ===== */
+function t(key) {
+  const pack = I18N[lang] || I18N.ru;
+  return (pack && pack[key]) || (I18N.ru[key]) || key;
+}
 
-      setText('menu-create', t('m_create'));
-      setText('menu-provider', t('m_provider'));
-      setText('menu-profile', t('m_profile'));
-      setText('menu-referral', t('m_referral'));
-      setText('menu-reset', t('m_reset'));
-    }
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
 
-    function showOnly(screenId) {
-      const ids = ['lang-screen', 'loading-screen', 'main-menu'];
-      ids.forEach((id) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (id === screenId) el.classList.remove('hidden');
-        else el.classList.add('hidden');
-      });
-    }
+function applyTexts() {
+  document.documentElement.lang = lang;
 
-    function setLang(next) {
-      lang = next;
-      localStorage.setItem('up_lang', lang);
-      applyTexts();
-    }
+  setText('lang-title', t('lang_title'));
+  setText('lang-subtitle', t('lang_subtitle'));
+  setText('lang-ru-badge', t('ru_badge'));
+  setText('lang-hr-badge', t('hr_badge'));
 
-    /* ===== auth ===== */
-    async function startAuth() {
-      showOnly('loading-screen');
+  setText('loading-text', t('loading'));
+  setText('menu-title', t('menu_title'));
 
-      try {
-        const response = await fetch('https://api.uslugeplus.com/auth/telegram', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ initData: tg ? tg.initData : '' })
-        });
+  setText('menu-create', t('m_create'));
+  setText('menu-provider', t('m_provider'));
+  setText('menu-profile', t('m_profile'));
+  setText('menu-referral', t('m_referral'));
+  setText('menu-reset', t('m_reset'));
 
-        const data = await response.json();
+  setText('policy-title', t('policy_title'));
+  setText('policy-text', t('policy_text'));
+  setText('policy-link', t('policy_link'));
+  setText('policy-accept', t('policy_accept'));
+}
 
-        if (data.ok) {
-          showOnly('main-menu');
-          console.log('User authorized:', data.user);
-        } else {
-          alert(t('auth_error'));
-        }
-      } catch (e) {
-        alert(t('net_error'));
-      }
-    }
+function showOnly(screenId) {
+  const ids = ['lang-screen', 'loading-screen', 'policy-screen', 'main-menu'];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === screenId) el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+}
 
-    /* ===== bootstrap ===== */
-    function bootstrap() {
-      applyTexts();
+function setLang(next) {
+  lang = next;
+  localStorage.setItem('up_lang', lang);
+  applyTexts();
+}
 
-      const saved = localStorage.getItem('up_lang');
-      if (!saved) {
-        showOnly('lang-screen');
+/* ===== Policy handlers (bind once) ===== */
+let policyBound = false;
+function bindPolicyHandlers() {
+  if (policyBound) return;
+  policyBound = true;
 
-        const ru = document.getElementById('lang-ru');
-        const hr = document.getElementById('lang-hr');
+  const link = document.getElementById('policy-link');
+  const accept = document.getElementById('policy-accept');
 
-        if (ru) {
-          ru.onclick = () => {
-            if (tg) tg.HapticFeedback.impactOccurred('light');
-            setLang('ru');
-            startAuth();
-          };
-        }
-
-        if (hr) {
-          hr.onclick = () => {
-            if (tg) tg.HapticFeedback.impactOccurred('light');
-            alert(t('hr_soon'));
-          };
-        }
-
-        return;
-      }
-
-      setLang(saved);
-      startAuth();
-    }
-
-    /* ===== menu actions ===== */
-    function action(type) {
+  if (link) {
+    link.onclick = (e) => {
+      try { e && e.preventDefault && e.preventDefault(); } catch {}
       if (tg) tg.HapticFeedback.impactOccurred('light');
+      alert('Текст условий будет добавлен чуть позже. Сейчас это экран-заглушка.');
+    };
+  }
 
-      if (type === 'reset_app') {
-        localStorage.removeItem('up_lang');
-        location.href = location.pathname + '?v=' + Date.now();
-        return;
-      }
+  if (accept) {
+    accept.onclick = () => {
+      if (tg) tg.HapticFeedback.impactOccurred('light');
+      setConsent();
+      showOnly('main-menu'); // Profile подключим следующим шагом
+    };
+  }
+}
 
-      alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
+function routeAfterAuth() {
+  if (!hasConsent()) {
+    bindPolicyHandlers();
+    showOnly('policy-screen');
+    return;
+  }
+  showOnly('main-menu');
+}
+
+/* ===== auth ===== */
+async function startAuth() {
+  showOnly('loading-screen');
+
+  try {
+    const response = await fetch('https://api.uslugeplus.com/auth/telegram', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData: tg ? tg.initData : '' })
+    });
+
+    const data = await response.json();
+
+    if (data.ok) {
+      console.log('User authorized:', data.user);
+      routeAfterAuth();
+    } else {
+      alert(t('auth_error'));
+    }
+  } catch (e) {
+    alert(t('net_error'));
+  }
+}
+
+/* ===== bootstrap ===== */
+function bootstrap() {
+  applyTexts();
+
+  const saved = localStorage.getItem('up_lang');
+  if (!saved) {
+    showOnly('lang-screen');
+
+    const ru = document.getElementById('lang-ru');
+    const hr = document.getElementById('lang-hr');
+
+    if (ru) {
+      ru.onclick = () => {
+        if (tg) tg.HapticFeedback.impactOccurred('light');
+        setLang('ru');
+        startAuth();
+      };
     }
 
-    bootstrap();
-  
+    if (hr) {
+      hr.onclick = () => {
+        if (tg) tg.HapticFeedback.impactOccurred('light');
+        alert(t('hr_soon'));
+      };
+    }
+
+    return;
+  }
+
+  setLang(saved);
+  startAuth();
+}
+
+/* ===== menu actions ===== */
+function action(type) {
+  if (tg) tg.HapticFeedback.impactOccurred('light');
+
+  if (type === 'reset_app') {
+    localStorage.removeItem('up_lang');
+    localStorage.removeItem(CONSENT_KEY);
+    localStorage.removeItem(CONSENT_AT_KEY);
+    location.href = location.pathname + '?v=' + Date.now();
+    return;
+  }
+
+  alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
+}
+
+bootstrap();
