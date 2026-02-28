@@ -351,3 +351,23 @@ p{
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+
+/* Toast (UI message) */
+.up-toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  max-width: min(92vw, 420px);
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.78);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.25;
+  text-align: center;
+  z-index: 120;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  pointer-events: none;
+}

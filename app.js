@@ -24,7 +24,7 @@ function policyHide(){
 
 function policyOpen(url){
   if (!url){
-    alert('Документ готовится.');
+    showToast('Документ готовится.');
     return;
   }
   if (tg && tg.openLink) tg.openLink(url);
@@ -127,6 +127,20 @@ function setText(id, value) {
   if (el) el.textContent = value;
 }
 
+let __toastTimer = null;
+function showToast(message, ms = 2600) {
+  const el = document.getElementById('up-toast');
+  if (!el) {
+    try { console.log('[toast]', message); } catch {}
+    return;
+  }
+  el.textContent = String(message ?? '');
+  el.classList.remove('hidden');
+  if (__toastTimer) clearTimeout(__toastTimer);
+  __toastTimer = setTimeout(() => { el.classList.add('hidden'); }, ms);
+}
+
+
 function applyTexts() {
   document.documentElement.lang = lang;
 
@@ -195,10 +209,10 @@ async function startAuth() {
       console.log('User authorized:', data.user);
       routeAfterAuth();
     } else {
-      alert(t('auth_error'));
+      showToast(t('auth_error'), 4200);
     }
   } catch (e) {
-    alert(t('net_error'));
+    showToast(t('net_error'), 4200);
   }
 }
 
@@ -225,7 +239,7 @@ function bootstrap() {
     if (hr) {
       hr.onclick = () => {
         if (tg) tg.HapticFeedback.impactOccurred('light');
-        alert(t('hr_soon'));
+        showToast(t('hr_soon'));
       };
     }
 
@@ -249,7 +263,7 @@ function action(type) {
     return;
   }
 
-  alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
+  showToast('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
 }
 
 bootstrap();
