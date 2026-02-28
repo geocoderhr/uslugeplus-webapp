@@ -26,7 +26,8 @@ const I18N = {
     policy_title: 'Условия',
     policy_text: 'Чтобы продолжить, нужно принять условия пользования и согласие на обработку персональных данных.',
     policy_link: 'Прочитать условия',
-    policy_accept: '✅ Принимаю'
+    policy_accept: 'Запустить',
+    policy_cancel: 'Отмена'
   },
   hr: {
     // Пока пусто: оставляем структуру, чтобы потом просто заполнить ключи
@@ -81,6 +82,7 @@ function applyTexts() {
   setText('policy-text', t('policy_text'));
   setText('policy-link', t('policy_link'));
   setText('policy-accept', t('policy_accept'));
+  setText('policy-cancel', t('policy_cancel'));
 }
 
 function showOnly(screenId) {
@@ -106,6 +108,8 @@ function bindPolicyHandlers() {
   policyBound = true;
 
   const link = document.getElementById('policy-link');
+  const cancel = document.getElementById('policy-cancel');
+
   const accept = document.getElementById('policy-accept');
 
   if (link) {
@@ -116,7 +120,14 @@ function bindPolicyHandlers() {
     };
   }
 
-  if (accept) {
+  if (cancel) {
+    cancel.onclick = () => {
+      if (tg) tg.HapticFeedback.impactOccurred('light');
+      if (tg && typeof tg.close === 'function') tg.close();
+    };
+  }
+
+if (accept) {
     accept.onclick = () => {
       if (tg) tg.HapticFeedback.impactOccurred('light');
       setConsent();

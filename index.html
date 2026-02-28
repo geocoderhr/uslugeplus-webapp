@@ -36,22 +36,24 @@
   
   <!-- Screen: Policy (consent) -->
   <div id="policy-screen" class="hidden">
-    <div class="card">
-      <h3 id="policy-title">Условия</h3>
-      <p id="policy-text">Чтобы продолжить, нужно принять условия пользования и согласие на обработку персональных данных.</p>
+    <div class="up-dialog">
+      <div class="up-avatar" aria-hidden="true">UP</div>
 
-      <p style="margin-top:8px;">
-        <a href="#" id="policy-link">Прочитать условия</a>
-      </p>
+      <div class="up-title" id="policy-title">UslugePlus</div>
+      <a class="up-about" href="#" id="policy-about">О боте &gt;</a>
 
-      <div class="lang-option" id="policy-accept" style="margin-top:12px;">
-        <span>✅ Принимаю</span>
+      <div class="up-text" id="policy-text">
+        Открывая это мини-приложение, вы принимаете <span class="up-linklike" id="policy-link">Условия использования</span> и соглашаетесь на обработку персональных данных.
+      </div>
+
+      <div class="up-actions">
+        <button class="up-btn up-btn-ghost" id="policy-cancel" type="button">Отмена</button>
+        <button class="up-btn up-btn-primary" id="policy-accept" type="button">Запустить</button>
       </div>
     </div>
   </div>
 
-
-  <!-- Screen: Main Menu (temporary, пока нет Policy/Profile) -->
+<!-- Screen: Main Menu (temporary, пока нет Policy/Profile) -->
   <div id="main-menu" class="hidden">
     <h3 id="menu-title">Главное меню</h3>
     <div class="menu-grid">

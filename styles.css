@@ -193,3 +193,105 @@ p{
 
   border-color: rgba(23, 195, 178, 0.22);
 }
+
+
+/* Policy modal (Telegram-like) */
+/* Policy modal (Telegram-like) */
+#policy-screen{
+  position: fixed;
+  inset: 0;
+  padding: 24px 16px;
+  z-index: 50;
+  display: none;
+}
+
+/* важно: hidden остаётся рабочим, поэтому включаем только когда не hidden */
+#policy-screen:not(.hidden){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+#policy-screen .up-dialog{
+  width: min(92vw, 360px);
+  background: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, #111);
+  border-radius: 22px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+#policy-screen .up-avatar{
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), rgba(255,255,255,0.0) 45%),
+              linear-gradient(135deg, rgba(23,195,178,0.75), rgba(255,138,0,0.70));
+  color: rgba(0,0,0,0.72);
+  border: 1px solid rgba(0,0,0,0.10);
+}
+
+#policy-screen .up-title{
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 0;
+}
+
+#policy-screen .up-about{
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--tg-theme-link-color, #3390ec);
+  text-decoration: none;
+}
+
+#policy-screen .up-text{
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--tg-theme-hint-color, rgba(0,0,0,0.62));
+}
+
+#policy-screen .up-linklike{
+  color: var(--tg-theme-link-color, #3390ec);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#policy-screen .up-actions{
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+#policy-screen .up-btn{
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.10);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#policy-screen .up-btn-ghost{
+  background: rgba(0,0,0,0.04);
+  color: var(--tg-theme-text-color, #111);
+}
+
+#policy-screen .up-btn-primary{
+  background: var(--tg-theme-button-color, #3390ec);
+  color: var(--tg-theme-button-text-color, #fff);
+  border-color: rgba(0,0,0,0.06);
+}
