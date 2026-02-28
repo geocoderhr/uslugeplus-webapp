@@ -61,7 +61,7 @@ function policyInit(){
     try { if (typeof setConsent === 'function') setConsent(); } catch {}
     policyHide();
     // если есть showOnly, возвращаемся туда
-    try { if (typeof showOnly === 'function') showOnly('main-menu'); } catch {}
+    try { if (typeof routeAfterAuth === 'function') routeAfterAuth(); else if (typeof showOnly === 'function') showOnly('main-menu'); } catch {}
   });
 }
 
