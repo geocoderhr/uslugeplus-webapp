@@ -87,8 +87,11 @@ p{
   align-items: center;
   justify-content: center;
 
-  padding: 10px 12px;
-  margin-top: 10px;
+  /* размеры плашки */
+  width: 88%;
+  height: 44px;
+  margin: 10px auto 0;
+  padding: 0 14px;
 
   border-radius: var(--r-item);
   background: rgba(0,0,0,0.03);
@@ -96,7 +99,9 @@ p{
 
   cursor: pointer;
   user-select: none;
+
   font-weight: 800;
+  font-size: 18px;
 
   transition: transform .08s ease, border-color .12s ease, background .12s ease;
 }
