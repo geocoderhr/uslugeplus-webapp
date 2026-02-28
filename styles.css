@@ -158,3 +158,10 @@ p{
   padding: 0 14px;          /* только горизонтальный внутренний отступ */
   margin: 10px auto 0;      /* центрируем по горизонтали */
 }
+/* center the title on language screen */
+#lang-screen h3{
+  text-align: center;
+}
+#lang-screen p{
+  text-align: center;
+}
