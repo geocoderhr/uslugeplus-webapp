@@ -63,6 +63,33 @@
   </div>
 
 <!-- Screen: Main Menu (temporary, пока нет Policy/Profile) -->
+
+  <!-- Screen: Profile (registration) -->
+  <div id="profile-screen" class="hidden">
+    <div class="up-dialog">
+      <div class="up-avatar" aria-hidden="true"></div>
+
+      <h2 class="up-title" id="profile-title">Регистрация</h2>
+      <div class="up-subtitle" id="profile-text">Нужны контакты, чтобы мы могли подтвердить заявки и связаться с вами.</div>
+
+      <div class="up-form">
+        <label class="up-label" for="profile-phone" id="profile-phone-label">Телефон</label>
+        <input id="profile-phone" class="up-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="+385 …">
+
+        <label class="up-label" for="profile-email" id="profile-email-label">Email</label>
+        <input id="profile-email" class="up-input" type="email" inputmode="email" autocomplete="email" placeholder="name@domain.com">
+
+        <label class="up-label" for="profile-city" id="profile-city-label">Город</label>
+        <input id="profile-city" class="up-input" type="text" autocomplete="address-level2" placeholder="Pula">
+      </div>
+
+      <div class="up-actions">
+        <button class="up-btn up-btn-ghost" id="profile-back" type="button">Назад</button>
+        <button class="up-btn up-btn-primary" id="profile-save" type="button">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
   <div id="main-menu" class="hidden">
     <h3 id="menu-title">Главное меню</h3>
     <div class="menu-grid">

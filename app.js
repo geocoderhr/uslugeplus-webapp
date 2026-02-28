@@ -93,7 +93,16 @@ const I18N = {
     policy_text: 'Чтобы продолжить, нужно принять условия пользования и согласие на обработку персональных данных.',
     policy_link: 'Прочитать условия',
     policy_accept: 'Запустить',
-    policy_cancel: 'Отмена'
+    policy_cancel: 'Отмена',
+
+    profile_title: 'Регистрация',
+    profile_text: 'Нужны контакты, чтобы мы могли подтвердить заявки и связаться с вами.',
+    profile_phone: 'Телефон',
+    profile_email: 'Email',
+    profile_city: 'Город',
+    profile_save: 'Сохранить',
+    profile_back: 'Назад',
+    profile_need_all: 'Заполните телефон, email и город.'
   },
   hr: {
     // Пока пусто: оставляем структуру, чтобы потом просто заполнить ключи
@@ -103,6 +112,82 @@ const I18N = {
 let lang = localStorage.getItem('up_lang') || 'ru';
 
 /* ===== Consent state ===== */
+
+/* ===== Profile state (registration) ===== */
+const UP_PROFILE_PHONE = 'up_profile_phone';
+const UP_PROFILE_EMAIL = 'up_profile_email';
+const UP_PROFILE_CITY  = 'up_profile_city';
+
+function getProfile() {
+  return {
+    phone: (localStorage.getItem(UP_PROFILE_PHONE) || '').trim(),
+    email: (localStorage.getItem(UP_PROFILE_EMAIL) || '').trim(),
+    city:  (localStorage.getItem(UP_PROFILE_CITY)  || '').trim(),
+  };
+}
+
+function setProfile(next) {
+  const p = next || {};
+  localStorage.setItem(UP_PROFILE_PHONE, String(p.phone || '').trim());
+  localStorage.setItem(UP_PROFILE_EMAIL, String(p.email || '').trim());
+  localStorage.setItem(UP_PROFILE_CITY,  String(p.city  || '').trim());
+}
+
+function isProfileComplete() {
+  const p = getProfile();
+  return !!(p.phone && p.email && p.city);
+}
+
+let profileBound = false;
+function bindProfileHandlers() {
+  if (profileBound) return;
+  profileBound = true;
+
+  const phone = document.getElementById('profile-phone');
+  const email = document.getElementById('profile-email');
+  const city  = document.getElementById('profile-city');
+  const save  = document.getElementById('profile-save');
+  const back  = document.getElementById('profile-back');
+
+  const fill = () => {
+    const p = getProfile();
+    if (phone) phone.value = p.phone;
+    if (email) email.value = p.email;
+    if (city)  city.value  = p.city;
+  };
+
+  fill();
+
+  if (back) {
+    back.onclick = () => {
+      try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); } catch {}
+      // назад: если профиль уже полный, то в меню, иначе в policy
+      if (isProfileComplete()) showOnly('main-menu');
+      else showOnly('policy-screen');
+    };
+  }
+
+  if (save) {
+    save.onclick = () => {
+      try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); } catch {}
+
+      setProfile({
+        phone: (phone ? phone.value : ''),
+        email: (email ? email.value : ''),
+        city:  (city  ? city.value  : ''),
+      });
+
+      if (!isProfileComplete()) {
+        showToast(t('profile_need_all'));
+        return;
+      }
+
+      showToast('Сохранено ✅');
+      showOnly('main-menu');
+    };
+  }
+}
+
 const CONSENT_VERSION = 'v1';
 const CONSENT_KEY = 'up_consent_version';
 const CONSENT_AT_KEY = 'up_consent_at';
@@ -163,10 +248,18 @@ function applyTexts() {
   setText('policy-link', t('policy_link'));
   setText('policy-accept', t('policy_accept'));
   setText('policy-cancel', t('policy_cancel'));
+
+  setText('profile-title', t('profile_title'));
+  setText('profile-text', t('profile_text'));
+  setText('profile-phone-label', t('profile_phone'));
+  setText('profile-email-label', t('profile_email'));
+  setText('profile-city-label', t('profile_city'));
+  setText('profile-save', t('profile_save'));
+  setText('profile-back', t('profile_back'));
 }
 
 function showOnly(screenId) {
-  const ids = ['lang-screen', 'loading-screen', 'policy-screen', 'main-menu'];
+  const ids = ['lang-screen', 'loading-screen', 'policy-screen', 'profile-screen', 'main-menu'];
   ids.forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -189,10 +282,17 @@ function routeAfterAuth() {
     showOnly('policy-screen');
     return;
   }
+
+  if (!isProfileComplete()) {
+    try { bindProfileHandlers(); } catch {}
+    showOnly('profile-screen');
+    return;
+  }
+
   showOnly('main-menu');
 }
 
-/* ===== auth ===== */
+ /* ===== auth ===== */
 async function startAuth() {
   showOnly('loading-screen');
 
@@ -254,10 +354,19 @@ function bootstrap() {
 function action(type) {
   if (tg) tg.HapticFeedback.impactOccurred('light');
 
+  if (type === 'profile') {
+    try { bindProfileHandlers(); } catch {}
+    showOnly('profile-screen');
+    return;
+  }
+
   if (type === 'reset_app') {
     localStorage.removeItem('up_lang');
     localStorage.removeItem(UP_POLICY_KEY);
     localStorage.removeItem(CONSENT_KEY);
+    localStorage.removeItem(UP_PROFILE_PHONE);
+    localStorage.removeItem(UP_PROFILE_EMAIL);
+    localStorage.removeItem(UP_PROFILE_CITY);
     localStorage.removeItem(CONSENT_AT_KEY);
     location.href = location.pathname + '?v=' + Date.now();
     return;
