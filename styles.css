@@ -63,18 +63,23 @@
   .lang-option{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding: 14px 14px;
+    justify-content:center;
+    gap:0;
+    padding: 10px 12px;
     border-radius: var(--r-item);
-    background: rgba(0,0,0,0.05);
+    background: rgba(0,0,0,0.04);
     border: 1px solid rgba(0,0,0,0.10);
     cursor:pointer;
     user-select:none;
     font-weight: 800;
-    margin-top: 12px;
+    margin-top: 10px;
     transition: transform .08s ease, border-color .12s ease, background .12s ease;
   }
+
+.lang-option > span:first-child{
+  width:100%;
+  text-align:center;
+}
 
   /* выбранный (RU) читается как активный */
   #lang-ru{
