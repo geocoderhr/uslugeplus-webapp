@@ -34,7 +34,7 @@
   @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
   .card{
-    width:100%;
+    width:90%;
     max-width: 400px;
     margin: 150px auto 0;
     background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.06));
