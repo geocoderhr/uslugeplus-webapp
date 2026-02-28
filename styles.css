@@ -184,7 +184,9 @@ p{
 #lang-screen .card{
   margin-left: auto;
   margin-right: auto;
-  width: min(84vw, 360px);
+  margin-left: auto;
+  margin-right: auto;
+    width: min(72vw, 300px) !important;
   background:
     linear-gradient(
       135deg,
