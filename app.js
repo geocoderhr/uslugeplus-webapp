@@ -212,17 +212,10 @@ function setText(id, value) {
   if (el) el.textContent = value;
 }
 
-let __toastTimer = null;
 function showToast(message, ms = 2600) {
-  const el = document.getElementById('up-toast');
-  if (!el) {
-    try { console.log('[toast]', message); } catch {}
-    return;
-  }
-  el.textContent = String(message ?? '');
-  el.classList.remove('hidden');
-  if (__toastTimer) clearTimeout(__toastTimer);
-  __toastTimer = setTimeout(() => { el.classList.add('hidden'); }, ms);
+  const fn = window.UP_UI && window.UP_UI.toast && window.UP_UI.toast.show;
+  if (typeof fn === 'function') return fn(message, ms);
+  try { console.log('[toast]', message); } catch {}
 }
 
 
