@@ -170,8 +170,8 @@ p{
   background:
     linear-gradient(
       135deg,
-      rgba(23, 195, 178, 0.18),
-      rgba(255, 138, 0, 0.16)
+      rgba(23, 195, 178, 0.35),
+      rgba(255, 138, 0, 0.30)
     ),
     var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.06));
   border-color: rgba(23, 195, 178, 0.22);
