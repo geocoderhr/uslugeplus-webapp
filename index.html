@@ -132,6 +132,7 @@
       <div class="menu-item" onclick="action('be_provider')" id="menu-provider">🛠 Я исполнитель</div>
       <div class="menu-item" onclick="action('profile')" id="menu-profile">👤 Профиль</div>
       <div class="menu-item" onclick="action('referral')" id="menu-referral">🎁 Бонусы</div>
+      <div class="menu-item" onclick="action('reset_app')" id="menu-reset">♻️ Сбросить данные</div>
     </div>
   </div>
 
@@ -152,6 +153,7 @@
         m_provider: '🛠 Я исполнитель',
         m_profile: '👤 Профиль',
         m_referral: '🎁 Бонусы',
+        m_reset: '♻️ Сбросить данные',
         auth_error: 'Ошибка авторизации. Попробуйте перезапустить приложение.',
         net_error: 'Ошибка связи с сервером',
         hr_soon: 'Hrvatski пока в разработке.'
@@ -185,6 +187,7 @@
       set('menu-provider', t('m_provider'));
       set('menu-profile', t('m_profile'));
       set('menu-referral', t('m_referral'));
+      set('menu-reset', t('m_reset'));
     }
 
     function showOnly(screenId) {
@@ -258,6 +261,13 @@
 
     function action(type) {
       if (tg) tg.HapticFeedback.impactOccurred('light');
+
+      if (type === 'reset_app') {
+        localStorage.removeItem('up_lang');
+        location.reload();
+        return;
+      }
+
       alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
     }
 
