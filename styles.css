@@ -194,13 +194,12 @@ p{
   border-color: rgba(23, 195, 178, 0.22);
 }
 
-
 /* Policy modal (Telegram-like) */
 /* Policy modal (Telegram-like) */
 #policy-screen{
   position: fixed;
   inset: 0;
-  padding: 24px 16px;
+  padding: clamp(18px, 10vh, 90px) 16px 24px;
   z-index: 50;
   display: none;
 }
@@ -208,7 +207,7 @@ p{
 /* важно: hidden остаётся рабочим, поэтому включаем только когда не hidden */
 #policy-screen:not(.hidden){
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: rgba(0,0,0,0.25);
   backdrop-filter: blur(2px);
@@ -224,21 +223,6 @@ p{
   box-shadow: 0 20px 60px rgba(0,0,0,0.22);
   text-align: center;
   border: 1px solid rgba(0,0,0,0.08);
-}
-
-#policy-screen .up-avatar{
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 10px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  letter-spacing: -0.3px;
-  background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), rgba(255,255,255,0.0) 45%),
-              linear-gradient(135deg, rgba(23,195,178,0.75), rgba(255,138,0,0.70));
-  color: rgba(0,0,0,0.72);
-  border: 1px solid rgba(0,0,0,0.10);
 }
 
 #policy-screen .up-title{
@@ -294,4 +278,76 @@ p{
   background: var(--tg-theme-button-color, #3390ec);
   color: var(--tg-theme-button-text-color, #fff);
   border-color: rgba(0,0,0,0.06);
+}
+
+/* POLICY: ширина как у Language + круглый аватар */
+#policy-screen .up-dialog{
+  width: min(72vw, 300px);
+  max-width: 300px;
+  box-sizing: border-box;
+}
+
+#policy-screen .up-avatar{
+  width: 88px;
+  height: 88px;
+  margin: 6px auto 10px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  background: url('/IMG_3034.jpeg') center/cover no-repeat;
+  background-size: 110%;
+  background-position: 50% 45%;
+
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+/* Policy: clickable rows + checkbox gate */
+#policy-screen .up-rows{
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+#policy-screen .up-row{
+  width: 100%;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(0,0,0,0.04);
+  padding: 0 14px;
+  font-weight: 800;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#policy-screen .up-row::after{
+  content: "›";
+  font-size: 20px;
+  opacity: 0.45;
+}
+
+#policy-screen .up-check{
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--tg-theme-hint-color, rgba(0,0,0,0.62));
+}
+
+#policy-screen .up-check input{
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+#policy-screen .up-btn-primary:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
 }

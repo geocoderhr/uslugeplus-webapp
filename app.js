@@ -1,4 +1,70 @@
 /* ===== Telegram ===== */
+
+// --- Policy gate (must accept before using app) ---
+const UP_POLICY_VERSION = '2026-02-28_v1';
+const UP_POLICY_KEY = 'up_policy_accepted_v';
+
+// позже заменим на реальные страницы
+const UP_TERMS_URL = '';
+const UP_PRIVACY_URL = '';
+
+function policyIsAccepted(){
+  return localStorage.getItem(UP_POLICY_KEY) === UP_POLICY_VERSION;
+}
+
+function policyShow(){
+  const el = document.getElementById('policy-screen');
+  if (el) el.classList.remove('hidden');
+}
+
+function policyHide(){
+  const el = document.getElementById('policy-screen');
+  if (el) el.classList.add('hidden');
+}
+
+function policyOpen(url){
+  if (!url){
+    alert('Документ готовится.');
+    return;
+  }
+  if (tg && tg.openLink) tg.openLink(url);
+  else window.open(url, '_blank');
+}
+
+let policyInited = false;
+
+function policyInit(){
+  if (policyInited) return;
+  policyInited = true;
+  const accept = document.getElementById('policy-accept');
+  const cancel = document.getElementById('policy-cancel');
+  const chk = document.getElementById('policy-check');
+  const terms = document.getElementById('policy-terms');
+  const privacy = document.getElementById('policy-privacy');
+
+  if (!accept || !cancel) return;
+
+  // кнопка активна только когда стоит галочка
+  const sync = () => { if (accept) accept.disabled = !(chk && chk.checked); };
+  sync();
+
+  if (chk) chk.addEventListener('change', sync);
+
+  if (terms) terms.addEventListener('click', () => policyOpen(UP_TERMS_URL));
+  if (privacy) privacy.addEventListener('click', () => policyOpen(UP_PRIVACY_URL));
+
+  cancel.addEventListener('click', () => { if (tg && tg.close) tg.close(); });
+
+  accept.addEventListener('click', () => {
+    if (!(chk && chk.checked)) return;
+    localStorage.setItem(UP_POLICY_KEY, UP_POLICY_VERSION);
+    try { if (typeof setConsent === 'function') setConsent(); } catch {}
+    policyHide();
+    // если есть showOnly, возвращаемся туда
+    try { if (typeof showOnly === 'function') showOnly('main-menu'); } catch {}
+  });
+}
+
 const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 if (tg) {
   tg.ready();
@@ -99,46 +165,13 @@ function setLang(next) {
   lang = next;
   localStorage.setItem('up_lang', lang);
   applyTexts();
+
 }
 
-/* ===== Policy handlers (bind once) ===== */
-let policyBound = false;
-function bindPolicyHandlers() {
-  if (policyBound) return;
-  policyBound = true;
-
-  const link = document.getElementById('policy-link');
-  const cancel = document.getElementById('policy-cancel');
-
-  const accept = document.getElementById('policy-accept');
-
-  if (link) {
-    link.onclick = (e) => {
-      try { e && e.preventDefault && e.preventDefault(); } catch {}
-      if (tg) tg.HapticFeedback.impactOccurred('light');
-      alert('Текст условий будет добавлен чуть позже. Сейчас это экран-заглушка.');
-    };
-  }
-
-  if (cancel) {
-    cancel.onclick = () => {
-      if (tg) tg.HapticFeedback.impactOccurred('light');
-      if (tg && typeof tg.close === 'function') tg.close();
-    };
-  }
-
-if (accept) {
-    accept.onclick = () => {
-      if (tg) tg.HapticFeedback.impactOccurred('light');
-      setConsent();
-      showOnly('main-menu'); // Profile подключим следующим шагом
-    };
-  }
-}
-
+/* ===== Policy gate ===== */
 function routeAfterAuth() {
-  if (!hasConsent()) {
-    bindPolicyHandlers();
+  if (!(hasConsent() || policyIsAccepted())) {
+    try { policyInit(); } catch {}
     showOnly('policy-screen');
     return;
   }
@@ -172,6 +205,7 @@ async function startAuth() {
 /* ===== bootstrap ===== */
 function bootstrap() {
   applyTexts();
+  try { policyInit(); } catch {}
 
   const saved = localStorage.getItem('up_lang');
   if (!saved) {
@@ -208,6 +242,7 @@ function action(type) {
 
   if (type === 'reset_app') {
     localStorage.removeItem('up_lang');
+    localStorage.removeItem(UP_POLICY_KEY);
     localStorage.removeItem(CONSENT_KEY);
     localStorage.removeItem(CONSENT_AT_KEY);
     location.href = location.pathname + '?v=' + Date.now();

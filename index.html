@@ -33,7 +33,6 @@
     <p id="loading-text">Авторизация...</p>
   </div>
 
-  
   <!-- Screen: Policy (consent) -->
   <div id="policy-screen" class="hidden">
     <div class="up-dialog">
@@ -45,6 +44,16 @@
       <div class="up-text" id="policy-text">
         Открывая это мини-приложение, вы принимаете <span class="up-linklike" id="policy-link">Условия использования</span> и соглашаетесь на обработку персональных данных.
       </div>
+
+      <div class="up-rows">
+        <button class="up-row" id="policy-terms" type="button">📄 Условия пользования</button>
+        <button class="up-row" id="policy-privacy" type="button">🔒 Политика конфиденциальности</button>
+      </div>
+
+      <label class="up-check" for="policy-check">
+        <input id="policy-check" type="checkbox">
+        <span>Я прочитал и принимаю документы</span>
+      </label>
 
       <div class="up-actions">
         <button class="up-btn up-btn-ghost" id="policy-cancel" type="button">Отмена</button>
