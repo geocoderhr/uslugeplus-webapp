@@ -1,71 +1,267 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UslugePlus</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root { --main-color: #3390ec; }
-        body { font-family: sans-serif; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .hidden { display: none; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--main-color); border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin-top: 50px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
-        .menu-item { background: var(--tg-theme-secondary-bg-color); padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>UslugePlus</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --main-color:#3390ec;
+      --radius:14px;
+      --border: rgba(0,0,0,0.12);
+      --shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--tg-theme-bg-color, #0b0f17);
+      color: var(--tg-theme-text-color, #e9eef7);
+      margin:0;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .hidden{display:none;}
+    .loader{
+      border: 4px solid rgba(0,0,0,0.08);
+      border-top: 4px solid var(--main-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1.2s linear infinite;
+      margin-top: 40px;
+    }
+    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+    .card{
+      width:100%;
+      max-width:520px;
+      background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.06));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    h3{margin: 10px 0 6px 0;}
+    p{margin: 8px 0; color: var(--tg-theme-hint-color, rgba(233,238,247,0.75));}
+
+    .lang-option{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.10);
+      cursor:pointer;
+      user-select:none;
+      font-weight:700;
+      margin-top:10px;
+    }
+    .lang-option:active{transform: scale(0.99);}
+    .lang-option.disabled{
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+    .badge{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,0.12);
+      color: var(--tg-theme-hint-color, rgba(233,238,247,0.75));
+      border: 1px solid rgba(0,0,0,0.10);
+      white-space:nowrap;
+    }
+
+    .menu-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap: 15px;
+      width:100%;
+      max-width:520px;
+      margin-top: 14px;
+    }
+    .menu-item{
+      background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.06));
+      padding: 18px;
+      border-radius: 12px;
+      text-align:center;
+      cursor:pointer;
+      border: 1px solid var(--border);
+      font-weight:800;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.14);
+    }
+    .menu-item:active{transform: scale(0.99);}
+  </style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="loader"></div>
-        <p>Авторизация...</p>
+  <!-- Screen: Language picker (first launch) -->
+  <div id="lang-screen" class="hidden">
+    <div class="card">
+      <h3 id="lang-title">Язык</h3>
+      <p id="lang-subtitle">Выбери язык интерфейса. Потом его можно будет поменять в профиле.</p>
+
+      <div class="lang-option" id="lang-ru">
+        <span>Русский</span>
+        <span class="badge" id="lang-ru-badge">сейчас</span>
+      </div>
+
+      <div class="lang-option disabled" id="lang-hr">
+        <span>Hrvatski</span>
+        <span class="badge" id="lang-hr-badge">в разработке</span>
+      </div>
     </div>
+  </div>
 
-    <div id="main-menu" class="hidden">
-        <h3>Главное меню</h3>
-        <div class="menu-grid">
-            <div class="menu-item" onclick="action('create_request')">📝 Создать заявку</div>
-            <div class="menu-item" onclick="action('be_provider')">🛠 Я исполнитель</div>
-            <div class="menu-item" onclick="action('profile')">👤 Профиль</div>
-            <div class="menu-item" onclick="action('referral')">🎁 Бонусы</div>
-        </div>
+  <!-- Screen: Loading/Auth -->
+  <div id="loading-screen" class="hidden">
+    <div class="loader"></div>
+    <p id="loading-text">Авторизация...</p>
+  </div>
+
+  <!-- Screen: Main Menu (temporary, пока нет Policy/Profile) -->
+  <div id="main-menu" class="hidden">
+    <h3 id="menu-title">Главное меню</h3>
+    <div class="menu-grid">
+      <div class="menu-item" onclick="action('create_request')" id="menu-create">📝 Создать заявку</div>
+      <div class="menu-item" onclick="action('be_provider')" id="menu-provider">🛠 Я исполнитель</div>
+      <div class="menu-item" onclick="action('profile')" id="menu-profile">👤 Профиль</div>
+      <div class="menu-item" onclick="action('referral')" id="menu-referral">🎁 Бонусы</div>
     </div>
+  </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) { tg.ready(); tg.expand(); }
 
-        async function init() {
-            try {
-                // Вызываем твой API для проверки пользователя 
-                const response = await fetch('https://api.uslugeplus.com/auth/telegram', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: tg.initData })
-                });
+    // i18n skeleton: RU сейчас, HR пока заглушка (готовим структуру под EN позже)
+    const I18N = {
+      ru: {
+        lang_title: 'Язык',
+        lang_subtitle: 'Выбери язык интерфейса. Потом его можно будет поменять в профиле.',
+        ru_badge: 'сейчас',
+        hr_badge: 'в разработке',
+        loading: 'Авторизация...',
+        menu_title: 'Главное меню',
+        m_create: '📝 Создать заявку',
+        m_provider: '🛠 Я исполнитель',
+        m_profile: '👤 Профиль',
+        m_referral: '🎁 Бонусы',
+        auth_error: 'Ошибка авторизации. Попробуйте перезапустить приложение.',
+        net_error: 'Ошибка связи с сервером',
+        hr_soon: 'Hrvatski пока в разработке.'
+      },
+      hr: {
+        // Пока пусто: оставляем структуру, чтобы потом просто заполнить ключи
+      }
+    };
 
-                const data = await response.json();
+    let lang = localStorage.getItem('up_lang') || 'ru';
 
-                if (data.ok) {
-                    document.getElementById('loading-screen').classList.add('hidden');
-                    document.getElementById('main-menu').classList.remove('hidden');
-                    console.log("User authorized:", data.user);
-                } else {
-                    alert("Ошибка авторизации. Попробуйте перезапустить приложение.");
-                }
-            } catch (e) {
-                alert("Ошибка связи с сервером");
-            }
+    function t(key) {
+      const pack = I18N[lang] || I18N.ru;
+      return (pack && pack[key]) || (I18N.ru[key]) || key;
+    }
+
+    function applyTexts() {
+      document.documentElement.lang = lang;
+
+      const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+
+      set('lang-title', t('lang_title'));
+      set('lang-subtitle', t('lang_subtitle'));
+      set('lang-ru-badge', t('ru_badge'));
+      set('lang-hr-badge', t('hr_badge'));
+
+      set('loading-text', t('loading'));
+      set('menu-title', t('menu_title'));
+
+      set('menu-create', t('m_create'));
+      set('menu-provider', t('m_provider'));
+      set('menu-profile', t('m_profile'));
+      set('menu-referral', t('m_referral'));
+    }
+
+    function showOnly(screenId) {
+      const ids = ['lang-screen', 'loading-screen', 'main-menu'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id === screenId) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+    }
+
+    function setLang(next) {
+      lang = next;
+      localStorage.setItem('up_lang', lang);
+      applyTexts();
+    }
+
+    async function startAuth() {
+      showOnly('loading-screen');
+
+      try {
+        const response = await fetch('https://api.uslugeplus.com/auth/telegram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ initData: tg ? tg.initData : '' })
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+          showOnly('main-menu');
+          console.log('User authorized:', data.user);
+        } else {
+          alert(t('auth_error'));
+        }
+      } catch (e) {
+        alert(t('net_error'));
+      }
+    }
+
+    function bootstrap() {
+      applyTexts();
+
+      const saved = localStorage.getItem('up_lang');
+      if (!saved) {
+        showOnly('lang-screen');
+
+        const ru = document.getElementById('lang-ru');
+        const hr = document.getElementById('lang-hr');
+
+        if (ru) {
+          ru.onclick = () => {
+            if (tg) tg.HapticFeedback.impactOccurred('light');
+            setLang('ru');
+            startAuth();
+          };
         }
 
-        function action(type) {
-            tg.HapticFeedback.impactOccurred('light');
-            alert("Выбрано: " + type + ". Скоро здесь будет логика n8n!");
+        if (hr) {
+          hr.onclick = () => {
+            if (tg) tg.HapticFeedback.impactOccurred('light');
+            alert(t('hr_soon'));
+          };
         }
+      } else {
+        setLang(saved);
+        startAuth();
+      }
+    }
 
-        init();
-    </script>
+    function action(type) {
+      if (tg) tg.HapticFeedback.impactOccurred('light');
+      alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
+    }
+
+    bootstrap();
+  </script>
 </body>
 </html>
