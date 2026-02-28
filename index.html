@@ -172,11 +172,10 @@
       if (tg) tg.HapticFeedback.impactOccurred('light');
 
       if (type === 'reset_app') {
-        localStorage.removeItem('up_lang');
-        location.reload();
-        return;
-      }
-
+         localStorage.removeItem('up_lang');
+         location.href = location.pathname + '?v=' + Date.now();
+         return;
+    }
       alert('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
     }
 
