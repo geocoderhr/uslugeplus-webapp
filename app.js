@@ -114,78 +114,15 @@ let lang = localStorage.getItem('up_lang') || 'ru';
 /* ===== Consent state ===== */
 
 /* ===== Profile state (registration) ===== */
-const UP_PROFILE_PHONE = 'up_profile_phone';
-const UP_PROFILE_EMAIL = 'up_profile_email';
-const UP_PROFILE_CITY  = 'up_profile_city';
-
-function getProfile() {
-  return {
-    phone: (localStorage.getItem(UP_PROFILE_PHONE) || '').trim(),
-    email: (localStorage.getItem(UP_PROFILE_EMAIL) || '').trim(),
-    city:  (localStorage.getItem(UP_PROFILE_CITY)  || '').trim(),
-  };
-}
-
-function setProfile(next) {
-  const p = next || {};
-  localStorage.setItem(UP_PROFILE_PHONE, String(p.phone || '').trim());
-  localStorage.setItem(UP_PROFILE_EMAIL, String(p.email || '').trim());
-  localStorage.setItem(UP_PROFILE_CITY,  String(p.city  || '').trim());
-}
-
 function isProfileComplete() {
-  const p = getProfile();
-  return !!(p.phone && p.email && p.city);
+  const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
+  try { return !!(reg && typeof reg.isComplete === 'function' && reg.isComplete()); } catch { return false; }
 }
 
-let profileBound = false;
 function bindProfileHandlers() {
-  if (profileBound) return;
-  profileBound = true;
-
-  const phone = document.getElementById('profile-phone');
-  const email = document.getElementById('profile-email');
-  const city  = document.getElementById('profile-city');
-  const save  = document.getElementById('profile-save');
-  const back  = document.getElementById('profile-back');
-
-  const fill = () => {
-    const p = getProfile();
-    if (phone) phone.value = p.phone;
-    if (email) email.value = p.email;
-    if (city)  city.value  = p.city;
-  };
-
-  fill();
-
-  if (back) {
-    back.onclick = () => {
-      try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); } catch {}
-      // назад: если профиль уже полный, то в меню, иначе в policy
-      if (isProfileComplete()) showOnly('main-menu');
-      else showOnly('policy-screen');
-    };
-  }
-
-  if (save) {
-    save.onclick = () => {
-      try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); } catch {}
-
-      setProfile({
-        phone: (phone ? phone.value : ''),
-        email: (email ? email.value : ''),
-        city:  (city  ? city.value  : ''),
-      });
-
-      if (!isProfileComplete()) {
-        showToast(t('profile_need_all'));
-        return;
-      }
-
-      showToast('Сохранено ✅');
-      showOnly('main-menu');
-    };
-  }
+  const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
+  if (!reg || typeof reg.bind !== 'function') return;
+  try { reg.bind({ tg, t, toast: showToast, showOnly }); } catch {}
 }
 
 const CONSENT_VERSION = 'v1';
@@ -357,9 +294,15 @@ function action(type) {
     localStorage.removeItem('up_lang');
     localStorage.removeItem(UP_POLICY_KEY);
     localStorage.removeItem(CONSENT_KEY);
-    localStorage.removeItem(UP_PROFILE_PHONE);
-    localStorage.removeItem(UP_PROFILE_EMAIL);
-    localStorage.removeItem(UP_PROFILE_CITY);
+    try {
+      const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
+      if (reg && typeof reg.clear === 'function') reg.clear();
+      else {
+        localStorage.removeItem('up_profile_phone');
+        localStorage.removeItem('up_profile_email');
+        localStorage.removeItem('up_profile_city');
+      }
+    } catch {}
     localStorage.removeItem(CONSENT_AT_KEY);
     location.href = location.pathname + '?v=' + Date.now();
     return;
