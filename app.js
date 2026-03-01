@@ -4,44 +4,7 @@
 const tg = (window.UP_SERVICES && window.UP_SERVICES.telegram) ? window.UP_SERVICES.telegram.init() : null;
 const st = (window.UP_SERVICES && window.UP_SERVICES.storage) ? window.UP_SERVICES.storage : null;
 
-/* ===== i18n skeleton: RU сейчас, HR заглушка (готовим структуру под EN позже) ===== */
-const I18N = {
-  ru: {
-    lang_title: 'Язык',
-    lang_subtitle: 'Выберите язык интерфейса.',
-    ru_badge: 'сейчас',
-    hr_badge: 'в разработке',
-    loading: 'Авторизация...',
-    menu_title: 'Главное меню',
-    m_create: '📝 Создать заявку',
-    m_provider: '🛠 Я исполнитель',
-    m_profile: '👤 Профиль',
-    m_referral: '🎁 Бонусы',
-    m_reset: '♻️ Сбросить данные',
-    auth_error: 'Ошибка авторизации. Попробуйте перезапустить приложение.',
-    net_error: 'Ошибка связи с сервером',
-    hr_soon: 'Hrvatski в разработке.',
-
-    policy_title: 'Условия',
-    policy_text: 'Чтобы продолжить, нужно принять условия пользования и согласие на обработку персональных данных.',
-    policy_link: 'Прочитать условия',
-    policy_accept: 'Запустить',
-    policy_cancel: 'Отмена',
-
-    profile_title: 'Регистрация',
-    profile_text: 'Нужны контакты, чтобы мы могли подтвердить заявки и связаться с вами.',
-    profile_phone: 'Телефон',
-    profile_email: 'Email',
-    profile_city: 'Город',
-    profile_save: 'Сохранить',
-    profile_back: 'Назад',
-    profile_need_all: 'Заполните телефон, email и город.'
-  },
-  hr: {
-    // Пока пусто: оставляем структуру, чтобы потом просто заполнить ключи
-  }
-};
-
+/* ===== i18n ===== */
 let lang = (st ? st.get('up_lang') : localStorage.getItem('up_lang')) || 'ru';
 
 /* ===== Consent state ===== */
@@ -79,8 +42,9 @@ function setConsent() {
 
 /* ===== helpers ===== */
 function t(key) {
-  const pack = I18N[lang] || I18N.ru;
-  return (pack && pack[key]) || (I18N.ru[key]) || key;
+  const i = window.UP_CORE && window.UP_CORE.i18n;
+  if (i && typeof i.t === 'function') return i.t(lang, key);
+  return key;
 }
 
 function setText(id, value) {
