@@ -6,6 +6,27 @@
   const UP_PROFILE_EMAIL = 'up_profile_email';
   const UP_PROFILE_CITY  = 'up_profile_city';
 
+  // stars (local)
+  const UP_STARS_KEY = 'up_stars_balance';
+  const UP_PROFILE_REWARD_KEY = 'up_profile_rewarded_v1';
+  const UP_PROFILE_REWARD_AMOUNT = 30;
+
+  function getStars() {
+    const raw = String(localStorage.getItem(UP_STARS_KEY) || '0').trim();
+    const n = parseInt(raw, 10);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function setStars(n) {
+    const v = Math.max(0, Number(n) || 0);
+    localStorage.setItem(UP_STARS_KEY, String(Math.floor(v)));
+  }
+
+  function addStars(delta) {
+    setStars(getStars() + (Number(delta) || 0));
+    return getStars();
+  }
+
   function getProfile() {
     return {
       phone: (localStorage.getItem(UP_PROFILE_PHONE) || '').trim(),
@@ -25,11 +46,29 @@
     localStorage.removeItem(UP_PROFILE_PHONE);
     localStorage.removeItem(UP_PROFILE_EMAIL);
     localStorage.removeItem(UP_PROFILE_CITY);
+    localStorage.removeItem(UP_PROFILE_REWARD_KEY);
   }
 
   function isComplete() {
     const p = getProfile();
     return !!(p.phone && p.email && p.city);
+  }
+
+  function completionPct() {
+    const p = getProfile();
+    const filled = [p.phone, p.email, p.city].filter(Boolean).length;
+    return Math.round((filled / 3) * 100);
+  }
+
+  function rewardIfEligible() {
+    if (!isComplete()) return { rewarded: false, stars: getStars() };
+
+    const already = localStorage.getItem(UP_PROFILE_REWARD_KEY) === '1';
+    if (already) return { rewarded: false, stars: getStars() };
+
+    localStorage.setItem(UP_PROFILE_REWARD_KEY, '1');
+    const stars = addStars(UP_PROFILE_REWARD_AMOUNT);
+    return { rewarded: true, stars };
   }
 
   let bound = false;
@@ -61,8 +100,7 @@
     if (back) {
       back.onclick = () => {
         try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); } catch {}
-        if (isComplete()) showOnly('main-menu');
-        else showOnly('policy-screen');
+        showOnly('main-menu');
       };
     }
 
@@ -81,7 +119,10 @@
           return;
         }
 
-        toast('Сохранено ✅');
+        const r = rewardIfEligible();
+        if (r.rewarded) toast(`Профиль заполнен ⭐ +${UP_PROFILE_REWARD_AMOUNT}`);
+        else toast('Профиль сохранён ✅');
+
         showOnly('main-menu');
       };
     }
@@ -90,8 +131,13 @@
   NS.registration = {
     getProfile,
     setProfile,
-        clear,
-isComplete,
+    clear,
+    isComplete,
+    completionPct,
+    getStars,
+    setStars,
+    addStars,
+    rewardIfEligible,
     bind,
   };
 })();

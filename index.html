@@ -91,7 +91,16 @@
   </div>
 
   <div id="main-menu" class="hidden">
-    <h3 id="menu-title">Главное меню</h3>
+    
+    <div id="up-profile-banner" class="up-profile-banner hidden">
+      <div class="up-profile-banner-head">
+        <div class="up-profile-banner-title">Заполните профиль</div>
+        <div class="up-profile-banner-progress"><span id="up-profile-progress">0%</span></div>
+      </div>
+      <div class="up-profile-banner-sub">Профиль открывает создание заявок и даёт <b>+30 ⭐</b>.</div>
+      <button id="up-profile-banner-btn" class="up-profile-banner-btn" type="button">Заполнить профиль</button>
+    </div>
+<h3 id="menu-title">Главное меню</h3>
     <div class="menu-grid">
       <div class="menu-item" onclick="action('create_request')" id="menu-create">📝 Создать заявку</div>
       <div class="menu-item" onclick="action('be_provider')" id="menu-provider">🛠 Я исполнитель</div>

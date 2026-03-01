@@ -205,21 +205,51 @@ function setLang(next) {
 
 }
 
+
+function updateHome() {
+  const banner = document.getElementById('up-profile-banner');
+  const pctEl = document.getElementById('up-profile-progress');
+
+  const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
+
+  let pct = 0;
+  try {
+    if (reg && typeof reg.completionPct === 'function') pct = reg.completionPct();
+    else pct = isProfileComplete() ? 100 : 0;
+  } catch {}
+
+  if (pctEl) pctEl.textContent = String(pct) + '%';
+
+  if (banner) {
+    if (pct >= 100) banner.classList.add('hidden');
+    else banner.classList.remove('hidden');
+  }
+}
+
+window.UP_APP = window.UP_APP || {};
+window.UP_APP.updateHome = updateHome;
+
+try { window.addEventListener('up:profile', () => updateHome()); } catch {}
+try { window.addEventListener('up:stars', () => updateHome()); } catch {}
+
 /* ===== Policy gate ===== */
 function routeAfterAuth() {
   if (!(hasConsent() || policyIsAccepted())) {
     try { policyInit(); } catch {}
+
+  const pb = document.getElementById('up-profile-banner-btn');
+  if (pb) {
+    pb.onclick = () => {
+      try { bindProfileHandlers(); } catch {}
+      showOnly('profile-screen');
+    };
+  }
+
     showOnly('policy-screen');
     return;
   }
-
-  if (!isProfileComplete()) {
-    try { bindProfileHandlers(); } catch {}
-    showOnly('profile-screen');
-    return;
-  }
-
   showOnly('main-menu');
+  try { updateHome(); } catch {}
 }
 
  /* ===== auth ===== */
@@ -250,6 +280,15 @@ async function startAuth() {
 function bootstrap() {
   applyTexts();
   try { policyInit(); } catch {}
+
+  const pb = document.getElementById('up-profile-banner-btn');
+  if (pb) {
+    pb.onclick = () => {
+      try { bindProfileHandlers(); } catch {}
+      showOnly('profile-screen');
+    };
+  }
+
 
   const saved = localStorage.getItem('up_lang');
   if (!saved) {
@@ -284,6 +323,24 @@ function bootstrap() {
 function action(type) {
   if (tg) tg.HapticFeedback.impactOccurred('light');
 
+  if (type === 'create_request') {
+    if (!isProfileComplete()) {
+      showToast('Заполните профиль, чтобы создавать заявки.');
+      try { bindProfileHandlers(); } catch {}
+      showOnly('profile-screen');
+      return;
+    }
+  }
+
+  if (type === 'be_provider') {
+    if (!isProfileComplete()) {
+      showToast('Заполните профиль, чтобы стать исполнителем.');
+      try { bindProfileHandlers(); } catch {}
+      showOnly('profile-screen');
+      return;
+    }
+  }
+
   if (type === 'profile') {
     try { bindProfileHandlers(); } catch {}
     showOnly('profile-screen');
@@ -294,6 +351,8 @@ function action(type) {
     localStorage.removeItem('up_lang');
     localStorage.removeItem(UP_POLICY_KEY);
     localStorage.removeItem(CONSENT_KEY);
+    localStorage.removeItem('up_stars_balance');
+    localStorage.removeItem('up_profile_rewarded_v1');
     try {
       const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
       if (reg && typeof reg.clear === 'function') reg.clear();

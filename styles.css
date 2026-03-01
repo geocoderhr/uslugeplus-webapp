@@ -399,3 +399,48 @@ p{
 #profile-screen .up-input:focus{
   border-color: rgba(23, 195, 178, 0.45);
 }
+
+
+/* === UP Profile banner === */
+#up-profile-banner{
+  margin: 10px 0 14px;
+  padding: 14px 14px 12px;
+  border-radius: 22px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: linear-gradient(135deg, rgba(47,128,237,0.18), rgba(155,81,224,0.18));
+}
+
+#up-profile-banner .up-profile-banner-head{
+  display:flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#up-profile-banner .up-profile-banner-title{
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+}
+
+#up-profile-banner .up-profile-banner-progress{
+  font-weight: 900;
+  opacity: 0.75;
+}
+
+#up-profile-banner .up-profile-banner-sub{
+  margin-top: 8px;
+  font-weight: 650;
+  color: var(--tg-theme-hint-color, rgba(0,0,0,0.62));
+  line-height: 1.25;
+}
+
+#up-profile-banner .up-profile-banner-btn{
+  margin-top: 12px;
+  width: 100%;
+  height: 48px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.80);
+  font-weight: 900;
+}
