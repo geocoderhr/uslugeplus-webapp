@@ -156,8 +156,8 @@ function setLang(next) {
 
 /* ===== Policy gate ===== */
 function routeAfterAuth() {
-  if (!(hasConsent() || ((window.UP_SCREENS && window.UP_SCREENS.policy && window.UP_SCREENS.policy.isAccepted) ? window.UP_SCREENS.policy.isAccepted({ storage: window.UP_SERVICES.storage }) : false))) {
-    try { (window.UP_SCREENS && window.UP_SCREENS.policy && window.UP_SCREENS.policy.init) && window.UP_SCREENS.policy.init({ telegram: window.UP_SERVICES.telegram, storage: window.UP_SERVICES.storage, toast: showToast, onAccepted: routeAfterAuth }); } catch {}
+  if (!(hasConsent() || ((window.UP_SCREENS && window.UP_SCREENS.policy && window.UP_SCREENS.policy.isAccepted) ? window.UP_SCREENS.policy.isAccepted({ storage: st }) : false))) {
+    try { (window.UP_CORE && window.UP_CORE.screens && window.UP_CORE.screens.initAll) && window.UP_CORE.screens.initAll({ tg: tg, storage: st, toast: showToast, t: t, showOnly: showOnly, onPolicyAccepted: routeAfterAuth }); } catch {}
     showOnly('policy-screen');
     return;
   }
@@ -186,7 +186,7 @@ async function startAuth() {
 /* ===== bootstrap ===== */
 function bootstrap() {
   applyTexts();
-  try { (window.UP_SCREENS && window.UP_SCREENS.policy && window.UP_SCREENS.policy.init) && window.UP_SCREENS.policy.init({ telegram: window.UP_SERVICES.telegram, storage: window.UP_SERVICES.storage, toast: showToast, onAccepted: routeAfterAuth }); } catch {}
+  try { (window.UP_CORE && window.UP_CORE.screens && window.UP_CORE.screens.initAll) && window.UP_CORE.screens.initAll({ tg: tg, storage: st, toast: showToast, t: t, showOnly: showOnly, onPolicyAccepted: routeAfterAuth }); } catch {}
   const saved = st ? st.get('up_lang') : localStorage.getItem('up_lang');
   if (!saved) {
     showOnly('lang-screen');
