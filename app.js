@@ -196,6 +196,7 @@ function showOnly(screenId) {
     if (id === screenId) el.classList.remove('hidden');
     else el.classList.add('hidden');
   });
+  if (screenId === 'main-menu') { try { bindHomeHandlers(); } catch {} try { updateHomeUI(); } catch {} }
 }
 
 function setLang(next) {
@@ -248,8 +249,10 @@ function routeAfterAuth() {
     showOnly('policy-screen');
     return;
   }
+  try { bindProfileHandlers(); } catch {}
   showOnly('main-menu');
-  try { updateHome(); } catch {}
+  try { updateHomeUI(); } catch {}
+try { updateHome(); } catch {}
 }
 
  /* ===== auth ===== */
@@ -279,6 +282,7 @@ async function startAuth() {
 /* ===== bootstrap ===== */
 function bootstrap() {
   applyTexts();
+  try { bindHomeHandlers(); } catch {}
   try { policyInit(); } catch {}
 
   const pb = document.getElementById('up-profile-banner-btn');
@@ -369,5 +373,83 @@ function action(type) {
 
   showToast('Выбрано: ' + type + '. Скоро здесь будет логика n8n!');
 }
+
+
+function bindHomeHandlers() {
+  if (bindHomeHandlers.__bound) return;
+  bindHomeHandlers.__bound = true;
+
+  const on = (id, fn) => {
+    const el = document.getElementById(id);
+    if (el) el.onclick = fn;
+  };
+
+  on('home-profile', () => action('profile'));
+  on('home-create',  () => action('create_request'));
+  on('home-provider',() => action('be_provider'));
+  on('home-referral',() => action('referral'));
+  on('home-reset',   () => action('reset_app'));
+  on('up-profile-cta', () => action('profile'));
+
+  const catsAll = document.getElementById('home-cats-all');
+  if (catsAll) catsAll.onclick = (e) => { try { e.preventDefault(); } catch {} action('categories'); };
+
+  const send = document.getElementById('home-send');
+  if (send) send.onclick = () => {
+    const q = (document.getElementById('home-query') || {}).value || '';
+    const v = String(q).trim();
+    if (v) localStorage.setItem('up_draft_query', v);
+    action('create_request');
+  };
+
+  document.querySelectorAll('#main-menu [data-action]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const a = el.getAttribute('data-action') || '';
+      action(a || 'noop');
+    });
+  });
+}
+
+function updateHomeUI() {
+  // stars
+  let stars = 0;
+  try {
+    const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
+    if (reg && typeof reg.getStars === 'function') stars = reg.getStars();
+    else stars = parseInt(localStorage.getItem('up_stars_balance') || '0', 10) || 0;
+  } catch (e) {}
+  const sc = document.getElementById('up-stars-count');
+  if (sc) sc.textContent = String(stars);
+
+  // completion %
+  let pct = 0;
+  try {
+    const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
+    if (reg && typeof reg.completionPct === 'function') pct = reg.completionPct();
+    else {
+      const phone = (localStorage.getItem('up_profile_phone') || '').trim();
+      const email = (localStorage.getItem('up_profile_email') || '').trim();
+      const city  = (localStorage.getItem('up_profile_city')  || '').trim();
+      pct = (phone ? 34 : 0) + (email ? 33 : 0) + (city ? 33 : 0);
+    }
+  } catch (e) {}
+
+  pct = parseInt(pct, 10);
+  if (!Number.isFinite(pct)) pct = 0;
+  if (pct < 0) pct = 0;
+  if (pct > 100) pct = 100;
+
+  const pe = document.getElementById('up-profile-pct');
+  if (pe) pe.textContent = pct + '%';
+  const bar = document.getElementById('up-profile-bar');
+  if (bar) bar.style.width = pct + '%';
+
+  const banner = document.getElementById('up-profile-banner');
+  if (banner) {
+    if (pct >= 100) banner.classList.add('hidden');
+    else banner.classList.remove('hidden');
+  }
+}
+
 
 bootstrap();
