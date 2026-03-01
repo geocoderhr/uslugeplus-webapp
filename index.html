@@ -90,27 +90,75 @@
     </div>
   </div>
 
+  <!-- Screen: Home (Mira-like) -->
   <div id="main-menu" class="hidden">
-    
-    <div id="up-profile-banner" class="up-profile-banner hidden">
-      <div class="up-profile-banner-head">
-        <div class="up-profile-banner-title">Заполните профиль</div>
-        <div class="up-profile-banner-progress"><span id="up-profile-progress">0%</span></div>
+    <div class="up-home">
+
+      <div class="up-topbar">
+        <button class="up-pill up-pill-icon" id="home-profile" type="button" aria-label="Профиль">👤</button>
+        <div class="up-pill up-pill-plan" id="home-plan">Бесплатно</div>
+        <div class="up-pill up-pill-stars" id="home-stars" aria-label="Баланс звезд">
+          <span class="up-star">⭐</span><span id="up-stars-count">0</span>
+        </div>
       </div>
-      <div class="up-profile-banner-sub">Профиль открывает создание заявок и даёт <b>+30 ⭐</b>.</div>
-      <button id="up-profile-banner-btn" class="up-profile-banner-btn" type="button">Заполнить профиль</button>
-    </div>
-<h3 id="menu-title">Главное меню</h3>
-    <div class="menu-grid">
-      <div class="menu-item" onclick="action('create_request')" id="menu-create">📝 Создать заявку</div>
-      <div class="menu-item" onclick="action('be_provider')" id="menu-provider">🛠 Я исполнитель</div>
-      <div class="menu-item" onclick="action('profile')" id="menu-profile">👤 Профиль</div>
-      <div class="menu-item" onclick="action('referral')" id="menu-referral">🎁 Бонусы</div>
-      <div class="menu-item" onclick="action('reset_app')" id="menu-reset">♻️ Сбросить данные</div>
+
+      <div class="up-hero">
+        <h1 class="up-h1" id="home-hero-title">Что нужно сделать?</h1>
+
+        <div class="up-search">
+          <input class="up-search-input" id="home-query" type="text" placeholder="Опиши задачу в двух фразах…" />
+          <button class="up-search-send" id="home-send" type="button" aria-label="Отправить">↗</button>
+        </div>
+
+        <div class="up-hero-actions">
+          <button class="up-action" id="home-create" type="button">📝 Создать заявку</button>
+          <button class="up-action" id="home-provider" type="button">🛠 Я исполнитель</button>
+        </div>
+      </div>
+
+      <div id="up-profile-banner" class="up-banner hidden">
+        <div class="up-banner-title">Заполните профиль</div>
+        <div class="up-banner-sub">Это ускорит подтверждение заявок. Награда: ⭐ +30</div>
+
+        <div class="up-banner-progress">
+          <div class="up-progress-track">
+            <div id="up-profile-bar" class="up-progress-bar" style="width:0%"></div>
+          </div>
+          <div class="up-progress-text"><span id="up-profile-pct">0%</span></div>
+        </div>
+
+        <button class="up-banner-btn" id="up-profile-cta" type="button">Заполнить профиль</button>
+      </div>
+
+      <div class="up-section">
+        <div class="up-section-head">
+          <div class="up-section-title">Категории</div>
+          <a class="up-section-link" href="#" id="home-cats-all">Показать все</a>
+        </div>
+
+        <div class="up-grid">
+          <div class="up-card" data-action="cat_home"><div class="up-card-emoji">🏠</div><div class="up-card-title">Дом и ремонт</div></div>
+          <div class="up-card" data-action="cat_electric"><div class="up-card-emoji">⚡</div><div class="up-card-title">Электрика</div></div>
+          <div class="up-card" data-action="cat_plumbing"><div class="up-card-emoji">🚿</div><div class="up-card-title">Сантехника</div></div>
+          <div class="up-card" data-action="cat_cleaning"><div class="up-card-emoji">🧽</div><div class="up-card-title">Уборка</div></div>
+        </div>
+      </div>
+
+      <div class="up-section">
+        <div class="up-section-head">
+          <div class="up-section-title">Сервисы</div>
+        </div>
+
+        <div class="up-list">
+          <button class="up-row" id="home-referral" type="button">🎁 Бонусы</button>
+          <button class="up-row" id="home-reset" type="button">♻️ Сбросить данные</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <script defer src="/js/ui/toast.js?v=c0beb72"></script>
+<script defer src="/js/ui/toast.js?v=c0beb72"></script>
     <script defer src="/js/screens/registration.js?v=c0beb72"></script>
 <script defer src="/app.js?v=c0beb72"></script>
   <div id="up-toast" class="up-toast hidden" role="status" aria-live="polite"></div>
