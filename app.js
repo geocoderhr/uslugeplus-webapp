@@ -55,7 +55,13 @@ function isProfileComplete() {
 function bindProfileHandlers() {
   const reg = window.UP_SCREENS && window.UP_SCREENS.registration;
   if (!reg || typeof reg.bind !== 'function') return;
-  try { reg.bind({ tg, t, toast: showToast, showOnly }); } catch {}
+
+  const make = { tg: tg, storage: st, toast: showToast, t: t, showOnly: showOnly };
+  const ctx = (window.UP_CORE && window.UP_CORE.screens && typeof window.UP_CORE.screens.ctx === 'function')
+    ? window.UP_CORE.screens.ctx(make)
+    : make;
+
+  try { reg.bind(ctx); } catch {}
 }
 
 const CONSENT_VERSION = 'v1';
