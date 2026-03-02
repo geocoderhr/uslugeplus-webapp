@@ -12,6 +12,8 @@
 
 ## Навигация (core)
 - `js/core/router.js` — единый способ показать один экран и скрыть остальные (`showOnly`).
+- `js/core/screens.js` — сборка `ctx` и единая инициализация экранов.
+- `js/core/i18n.js` — словари переводов (`PACKS`) и функция `t(lang, key)`.
 
 ## Сервисы (services)
 Внешний мир и состояние:
@@ -65,7 +67,7 @@
 Каркас приложения:
 - роутинг экранов (`router.js`)
 - сборка контекста и единая инициализация (`screens.js`)
-- сюда же позже можно вынести i18n, если вырастет
+- i18n (`i18n.js`): словари и функция `t(lang, key)`
 
 ### 4) app.js
 Сценарий запуска:
@@ -105,6 +107,7 @@
 - “Где политика/условия?” → `js/screens/policy.js`
 - “Где роутинг?” → `js/core/router.js`
 - “Где контекст и общая инициализация экранов?” → `js/core/screens.js`
+- “Где i18n и словари текста?” → `js/core/i18n.js`
 - “Где запросы к API?” → `js/services/api.js`
 - “Где Telegram SDK?” → `js/services/telegram.js`
 - “Где ключи localStorage/reset?” → `js/services/storage.js`
